@@ -1,0 +1,116 @@
+Spring Security обеспечивает всестороннюю поддержку аутентификации, авторизации и 
+защиты от распространенных эксплойтов. Он также обеспечивает интеграцию с другими 
+библиотеками, чтобы упростить его использование.
+Spring Security - это список фильтров в виде класса FilterChainProxy, интегрированного в 
+контейнер сервлетов, и в котором есть поле List<SecurityFilterChain>. Каждый фильтр реализует 
+какой-то механизм безопасности. Важна последовательность фильтров в цепочке. 
+Когда мы добавляем аннотацию @EnableWebSecurity добавляется DelegatingFilterProxy, 
+его задача заключается в том, чтобы вызвать цепочку фильтров (FilterChainProxy) из Spring 
+Security.
+В Java-based конфигурации цепочка фильтров создается неявно.
+Если мы хотим настроить свою цепочку фильтров, мы можем сделать это, создав класс, 
+конфигурирующий наше Spring Security приложение, и имплементировав интерфейс 
+WebSecurityConfigurerAdapter. В данном классе, мы можем переопределить метод:
+@Override
+protected void configure(HttpSecurity http) throws Exception {
+ http
+.csrf().disable()
+.authorizeRequests();
+}
+Именно этот метод конфигурирует цепочку фильтров Spring Security и логика, указанная 
+в этом методе, настроит цепочку фильтров.
+Основные классы и интерфейсы
+SecurityContext - интерфейс, отражающий контекст безопасности для текущего потока. 
+Является контейнером для объекта типа Authentication. (Аналог - ApplicationContext, в котором 
+лежат бины).
+По умолчанию на каждый поток создается один SecurityContext. SecurityContext-ы
+хранятся в SecurityContextHolder.
+Имеет только два метода: getAuthentication() и setAuthentication(Authentication 
+authentication).
+SecurityContextHolder - это место, где Spring Security хранит информацию о том, кто 
+аутентифицирован. Класс, хранящий в ThreadLocal SecurityContext-ы для каждого потока, и 
+содержащий статические методы для работы с SecurityContext-ами, а через них с текущим 
+объектом Authentication, привязанным к нашему веб-запросу.
+Authentication - объект, отражающий информацию о текущем пользователе и его 
+привилегиях. Вся работа Spring Security будет заключаться в том, что различные фильтры и 
+обработчики будут брать и класть объект Authentication для каждого посетителя. Кстати объект 
+Authentication можно достать в Spring MVC контроллере командой 
+SecurityContextHolder.getContext().getAuthentication(). Authentication имеет 
+реализацию по умолчанию - класс UsernamePasswordAuthenticationToken, предназначенный 
+для хранения логина, пароля и коллекции Authorities.
+Principal - интерфейс из пакета java.security, отражающий учетную запись пользователя. 
+В терминах логин-пароль это логин. В интерфейсе Authentication есть метод getPrincipal(), 
+возвращающий Object. При аутентификации с использованием имени пользователя/пароля 
+Principal реализуется объектом типа UserDetails.
+Credentials - любой Object; то, что подтверждает учетную запись пользователя, как 
+правило пароль (отпечатки пальцев, пин - всё это Credentials, а владелец отпечатков и пина -
+Principal).
+GrantedAuthority - полномочия, предоставленные пользователю, например, роли или 
+уровни доступа.
+UserDetails - интерфейс, представляющий учетную запись пользователя. Как правило 
+модель нашего пользователя должна имплементировать его. Она просто хранит 
+пользовательскую информацию в виде логина, пароля и флагов isAccountNonExpired, 
+isAccountNonLocked, isCredentialsNonExpired, isEnabled, а также коллекции прав (ролей) 
+пользователя. Данная информация позже инкапсулируется в объекты Authentication.
+UserDetailsService - интерфейс объекта, реализующего загрузку пользовательских 
+данных из хранилища. Созданный нами объект с этим интерфейсом должен обращаться к БД и 
+получать оттуда юзеров.
+AuthenticationManager - основной стратегический интерфейс для аутентификации. 
+Имеет только один метод, который срабатывает, когда пользователь пытается 
+аутентифицироваться в системе:
+public interface AuthenticationManager {
+ Authentication authenticate(Authentication authentication)
+ throws AuthenticationException;
+}
+AuthenticationManager может сделать одну из 3 вещей в своем методе authenticate():
+1. вернуть Authentication (с authenticated=true), если предполагается, что вход 
+осуществляет корректный пользователь.
+2. бросить AuthenticationException, если предполагается, что вход осуществляет 
+некорректный пользователь.
+3. вернуть null, если принять решение не представляется возможным.
+Наиболее часто используемая реализация AuthenticationManager - родной класс 
+ProviderManager, который содержит поле private List<AuthenticationProvider> 
+providers со списком AuthenticationProvider-ов и итерирует запрос аутентификации по этому 
+списку AuthenticationProvider-ов. Идея такого разделения - поддержка различных механизмов 
+аутентификации на сайтах.
+AuthenticationProvider - интерфейс объекта, выполняющего аутентификацию. Имеет 
+массу готовых реализаций. Также можем задать свой тип аутентификации. Как правило в 
+небольших проектах одна логика аутентификации - по логину и паролю. В проектах побольше 
+логик может быть несколько: Google-аутентификация и т.д., и для каждой из них создается свой 
+объект AuthenticationProvider.
+AuthenticationProvider немного похож на AuthenticationManager, но у него есть 
+дополнительный метод, позволяющий вызывающей стороне спрашивать, поддерживает ли он 
+переданный ему объект Authentication, возможно этот AuthenticationProvider может 
+поддерживать только аутентификацию по логину и паролю, но не поддерживать Googleаутентификацию:
+boolean supports(java.lang.Class<?> authentication)
+PasswordEncoder - интерфейс для шифрования/расшифровывания паролей. Одна из 
+популярных реализаций - BCryptPasswordEncoder.
+В случае, если нам необходимо добавить логику при успешной/неудачной 
+аутентификации, мы можем создать класс и имплементировать интерфейсы 
+AuthenticationSuccessHandler и AuthenticationFailureHandler соответственно, переопределив их 
+методы.
+Как это работает с формой логина и UserDetailsService:
+❖ Пользователь вводит в форму и отправляет логин и пароль.
+❖ UsernamePasswordAuthenticationFilter создает объект Authentication -
+UsernamePasswordAuthenticationToken, где в качестве Principal - логин, а в качестве 
+Credentials - пароль.
+❖ Затем UsernamePasswordAuthenticationToken передаёт объект Authentication с логином 
+и паролем AuthenticationManager-у.
+❖ AuthenticationManager в виде конкретного класса ProviderManager внутри своего списка 
+объектов AuthenticationProvider, имеющих разные логики аутентификации, пытается 
+аутентифицировать посетителя, вызывая его метод authenticate(). У каждого 
+AuthenticationProvider-а:
+➢ Метод authenticate() принимает в качестве аргумента незаполненный объект 
+Authentication, например только с логином и паролем, полученными в форме 
+логина на сайте. Затем с помощью UserDetailsService метод идёт в БД и ищет 
+такого пользователя.
+➢ Если такой пользователь есть в БД, AuthenticationProvider получает его из базы 
+в виде объекта UserDetails. Объект Authentication заполняется данными из 
+UserDetails - в него включаются Authorities, а в Principal записывается сам объект 
+UserDetails, содержащий пользователя.
+➢ Затем этот метод возвращает заполненный объект Authentication (прошли 
+аутентификацию). Вызывается AuthenticationSuccessHandler.
+➢ Если логин либо пароль неверные, то выбрасывается исключение. Вызывается 
+AuthenticationFailureHandler.
+❖ Затем этот объект Authentication передается в AccessDecisionManager и получаем 
+решение на получение доступа к запрашиваемой странице (проходим авторизацию).

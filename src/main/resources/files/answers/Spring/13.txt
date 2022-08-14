@@ -1,0 +1,39 @@
+Мы используем @Primary, чтобы отдавать предпочтение бину, когда есть несколько 
+бинов одного типа. Эта аннотация полезна, когда мы хотим указать, какой компонент 
+определенного типа должен внедряться по умолчанию.
+@Configuration
+public class Config {
+ @Bean
+ public Employee JohnEmployee() {
+ return new Employee("John");
+ }
+ @Bean
+ @Primary
+ public Employee TonyEmployee() {
+ return new Employee("Tony");
+ }
+}
+или с аннотацией @Component
+@Component
+public class DepartmentManager implements Manager {
+ @Override
+ public String getManagerName() {
+ return "Department manager";
+ }
+}
+@Component
+@Primary
+public class GeneralManager implements Manager {
+ @Override
+ public String getManagerName() {
+ return "General manager";
+ }
+}
+Теперь, где будут требоваться бины типа Employee и Manager будут созданы и внедрены 
+TonyEmployee и GeneralManager.
+Когда есть несколько бинов одного типа, подходящих для внедрения, аннотация 
+@Qualifier позволяет указать в качестве аргумента имя конкретного бина, который следует 
+внедрить.
+Стоит отметить, что если присутствуют аннотации @Qualifier и @Primary, то аннотация 
+@Qualifier будет иметь приоритет. По сути, @Primary определяет значение по умолчанию, в то 
+время как @Qualifier более специфичен.

@@ -1,0 +1,34 @@
+Java-аннотация @Inject входит в пакет javax.inject и, чтобы её использовать, нужно 
+добавить зависимость:
+<dependency>
+ <groupId>javax.inject</groupId>
+ <artifactId>javax.inject</artifactId>
+ <version>1</version>
+</dependency>
+Размещается над полями, методами, и конструкторами с аргументами. @Inject как и 
+@Autowired в первую очередь пытается подключить зависимость по типу, затем по описанию и 
+только потом по имени. Это означает, что даже если имя переменной ссылки на класс 
+отличается от имени компонента, но они одинакового типа, зависимость все равно будет 
+разрешена:
+@Inject
+private ArbitraryDependency fieldInjectDependency;
+отличается от имени компонента, настроенного в контексте приложения:
+@Bean
+public ArbitraryDependency injectDependency() {
+ ArbitraryDependency injectDependency = new ArbitraryDependency();
+ return injectDependency;
+}
+Разность имён injectDependency и fieldInjectDependency не имеет значения, зависимость
+будет подобрана по типу ArbitraryDependency.
+Если в контейнере несколько бинов-кандидатов на внедрение, то нужно использовать 
+аннотацию @Qualifier:
+@Inject
+@Qualifier("defaultFile")
+private ArbitraryDependency defaultDependency;
+@Inject
+@Qualifier("namedFile")
+private ArbitraryDependency namedDependency;
+При использовании конкретного имени (Id) бина используем @Named:
+@Inject
+@Named("yetAnotherFieldInjectDependency")
+private ArbitraryDependency yetAnotherFieldInjectDependency;

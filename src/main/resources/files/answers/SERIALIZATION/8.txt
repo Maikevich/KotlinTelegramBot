@@ -1,0 +1,12 @@
+serialVersionUID нужно изменять при внесении в класс несовместимых изменений, например 
+при удалении какого-либо его атрибута.
+Чтобы не допустить автоматическую сериализацию можно переопределить private 
+методы для создания исключительной ситуации NotSerializableException.
+private void writeObject(ObjectOutputStream out) throws IOException {
+ throw new NotSerializableException();
+}
+private void readObject(ObjectInputStream in) throws IOException {
+ throw new NotSerializableException();
+}
+Любая попытка записать или прочитать этот объект теперь приведет к возникновению 
+исключительной ситуации.

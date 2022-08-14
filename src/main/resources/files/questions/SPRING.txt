@@ -1,0 +1,85 @@
+1. Что такое инверсия контроля (IoC) и внедрение зависимостей (DI)? Как они реализованы в
+Spring?
+Inversion of Control (IoC)
+Dependency Injection (DI)
+2. Что такое IoC Container?
+3. Что такое Bean в Spring? 1
+4. Расскажите про аннотацию @Bean
+5. Расскажите про аннотацию @Component
+6. Чем отличаются аннотации @Bean и @Component?
+7. Расскажите про аннотации @Service и @Repository. В чем различия?
+8. Расскажите про аннотацию @Autowired
+9. Расскажите про аннотацию @Resource
+10. Расскажите про аннотацию @Inject
+11. Расскажите про аннотацию @Lookup
+12. Можно ли вставить бин в статическое поле? Почему?
+13. Расскажите про аннотации @Primary и @Qualifier
+14. Как заинжектить примитив?
+@Value
+@Value with SpEL
+@Value with Map
+@Value with Constructor
+@Value with Setter
+
+15. Как заинжектить коллекцию?
+Array Injection
+Collections Injection
+Коллекции бинов одного типа
+Использование @Qualifier
+Упорядочивание элементов массивов / списков
+
+16. Расскажите про аннотацию @Conditional
+17. Расскажите про аннотацию @ComponentScan
+18. Расскажите про аннотацию @Profile
+19. Расскажите про ApplicationContext и BeanFactory, чем отличаются? В каких случаях что
+стоит использовать?
+BeanFactory
+ApplicationContext
+ApplicationContext vs. BeanFactory
+
+20. Расскажите про жизненный цикл бина, аннотации @PostConstruct и @PreDestroy()
+Жизненный цикл бинов
+-Парсирование конфигурации и создание BeanDefinition
+-Настройка созданных BeanDefinition
+-Создание кастомных FactoryBean (только для XML-конфигурации)
+-Создание экземпляров бинов
+-Настройка созданных бинов
+-Бины готовы к использованию
+-Закрытие контекста
+@PostConstruct
+@PreDestroy
+
+21. Расскажите про scope бинов. Какой scope используется по умолчанию? Что изменилось в
+пятом Spring?
+Singleton
+Prototype
+Request
+Session
+Application
+Websocket
+Custom thread scope
+
+22. Что такое АОП? Как реализовано в спринге?
+23. Как спринг работает с транзакциями? Расскажите про аннотацию @Transactional
+24. Расскажите про паттерн MVC, как он реализован в Spring?
+MVC (Model-View-Controller)
+Spring Web MVC
+
+25. Что такое ViewResolver?
+26. Расскажите про шаблон проектирования Front Controller, как он реализован в Spring?
+27. Чем отличаются Model, ModelMap и ModelAndView?
+Model
+ModelMap
+ModelAndView
+
+28. Расскажите про аннотации @Controller и @RestController. Чем они отличаются? Как
+вернуть ответ со своим статусом (например 213)?
+@Controller
+@RestController
+ResponseEntity
+
+29. В чем разница между Filters, Listeners и Interceptors?
+30. Можно ли передать в GET-запросе один и тот же параметр несколько раз? Как?
+31. Как работает Spring Security? Как сконфигурировать? Какие интерфейсы используются?
+32. Что такое Spring Boot? Какие у него преимущества? Как конфигурируется? Подробно
+33. Расскажите про нововведения Spring

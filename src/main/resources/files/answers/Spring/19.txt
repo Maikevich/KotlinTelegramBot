@@ -1,0 +1,37 @@
+BeanFactory
+BeanFactory — это интерфейс, который предоставляет механизм конфигурации, 
+способный управлять объектами любого типа. В общем, BeanFactory предоставляет 
+инфраструктуру конфигурации и основные функциональные возможности.
+BeanFactory легче по сравнению с ApplicationContext.
+ApplicationContext 
+ApplicationContext является наследником BeanFactory и полностью реализует его 
+функционал, добавляя больше специфических enterprise-функций.
+ApplicationContext vs. BeanFactory
+Feature BeanFactory ApplicationContext
+Bean instantiation/wiring Yes Yes
+Integrated lifecycle management No Yes
+Automatic BeanPostProcessor registration No Yes
+Automatic BeanFactoryPostProcessor
+registration
+No Yes
+Convenient MessageSource access (for 
+internalization)
+No Yes
+Built-in ApplicationEvent publication 
+mechanism
+No Yes
+1. ApplicationContext загружает все бины при запуске, а BeanFactory - по требованию.
+2. ApplicationContext расширяет BeanFactory и предоставляет функции, которые подходят 
+для корпоративных приложений:
+a. поддержка внедрения зависимостей на основе аннотаций;
+b. удобный доступ к MessageSource (для использования в интернационализации);
+c. публикация ApplicationEvent - для бинов, реализующих интерфейс 
+ApplicationListener, с помощью интерфейса ApplicationEventPublisher;
+d. простая интеграция с функциями Spring AOP.
+3. ApplicationContext поддерживает автоматическую регистрацию BeanPostProcessor и 
+BeanFactoryPostProcessor. Поэтому всегда желательно использовать ApplicationContext, 
+потому что Spring 2.0 (и выше) интенсивно использует BeanPostProcessor.
+4. ApplicationContext поддерживает практически все типы scope для бинов, а BeanFactory 
+поддерживает только два - Singleton и Prototype.
+5. В BeanFactory не будут работать транзакции и Spring AOP. Это может привести к 
+путанице, потому что конфигурация с виду будет корректной.

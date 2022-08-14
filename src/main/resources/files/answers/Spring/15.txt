@@ -1,0 +1,170 @@
+Array Injection
+Мы можем вставлять массивы примитивов и ссылочных типов. Со всеми массивами и 
+коллекциями мы можем использовать внедрение через конструкторы, сеттеры или поля.
+@Configuration
+public class ArrayExample {
+ @Bean
+ public TestBean testBean () {
+ return new TestBean();
+ }
+ @Bean
+ public String[] strArray(){
+ return new String[]{"two", "three", "four"};
+}
+public class TestBean {
+ private String[] stringArray;
+ @Autowired
+ public void setStringArray (String[] stringArray) {
+ this.stringArray = stringArray;
+ }
+}
+Collections Injection
+public class ListExample {
+ @Bean
+ public TestBean testBean () {
+ return new TestBean();
+ }
+ @Bean
+ public List<String> strList() {
+ return Arrays.asList("two", "three", "four");
+ }
+}
+public class TestBean {
+ private List<String> stringList;
+ 
+ @Autowired
+ public void setStringList (List<String> stringList) {
+ this.stringList = stringList;
+ }
+}
+Коллекции бинов одного типа
+Также мы можем собрать все бины одного типа, находящиеся в контейнере, и внедрить 
+их в коллекцию или массив:
+@Configuration
+public class SetInjection {
+ @Bean
+ public TestBean testBean () {
+ return new TestBean();
+ }
+ @Bean
+ public RefBean refBean1 () {
+ return new RefBean("bean 1");
+ }
+ @Bean
+ public RefBean refBean2 () {
+ return new RefBean2("bean 2");
+ }
+ @Bean
+ public RefBean refBean3 () {
+ return new RefBean3("bean 3");
+ }
+ public static class TestBean {
+ // All bean instances of type RefBean will be injecting here
+ @Autowired
+ private Set<RefBean> refBeans;
+ ...
+ }
+ public static class RefBean{
+ private String str;
+ public RefBean(String str){
+ this.str = str;
+ }
+ .....
+ }
+}
+Если мы хотим внедрить вышеупомянутые бины RefBean в Map, то значениями Map 
+будут сами бины, а ключами будут имена бинов:
+{refBean1 = RefBean{str='bean 1'}, refBean2 = RefBean{str='bean 2'}, refBean3 = 
+RefBean{str='bean 3'}}
+Использование @Qualifier
+Методы класса JavaConfig (те, которые аннотированы @Bean) могут быть объявлены с 
+определенным квалифицирующим типом, используя @Qualifier. Мы использовали параметр 
+'name' у аннотации @Bean, чтобы указать конкретный классификатор для бина. Но элемент 
+'name', на самом деле, является не столько именем, сколько идентификатором бина, который 
+должен быть уникальным, потому что все бины хранятся в контейнере в Map.
+В случае с коллекцией мы хотим, чтобы несколько бинов имели одно и то же имя 
+квалификатора, чтобы их можно было внедрить в одну коллекцию с одним и тем же 
+квалификатором. В этом случае мы должны использовать аннотацию @Qualifier вместе с @Bean 
+вместо элемента name.
+@Configuration
+public class SetInjection {
+ @Bean
+ public TestBean testBean () {
+ return new TestBean();
+ }
+ @Bean
+ public RefBean refBean1 () {
+ return new RefBean("bean 1");
+ }
+ @Bean
+ @Qualifier("myRefBean")
+ public RefBean refBean2 () {
+ return new RefBean2("bean 2");
+ }
+ @Bean
+ @Qualifier("myRefBean")
+ public RefBean refBean3 () {
+ return new RefBean3("bean 3");
+ }
+ public static class TestBean {
+ @Autowired
+ @Qualifier("myRefBean")
+ private Set<RefBean> refBeans;
+ }
+}
+Только бины с именами refBean2 и refBean3 попадут в коллекцию, так как у них 
+одинаковые квалификаторы - myRefBean.
+Упорядочивание элементов массивов / списков
+Бины могут быть упорядочены, когда они вставляются в списки (не Set или Map) или 
+массивы. Поддерживаются как аннотация @Order, так и интерфейс Ordered. Например:
+@Configuration
+public class ArrayExample {
+ @Bean
+ public TestBean testBean () {
+ return new TestBean();
+ }
+ @Bean
+ @Order(3)
+ public String refString1 () {
+ return "my string 1";
+ }
+ @Bean
+ @Order(1)
+ public String refString2 () {
+ return "my string 2";
+ }
+ @Bean
+ @Order(2)
+ public String refString3 () {
+ return "my string 3";
+ }
+ private static class TestBean {
+ private String[] stringArray;
+ @Autowired
+ public void setStringArray (String[] stringArray) {
+ this.stringArray = stringArray;
+ }
+ public String[] getStringArray () {
+ return stringArray;
+ }
+ }
+}
+Массив строк будет выглядеть так:
+[my string 2, my string 3, my string 1]
+Также мы можем объявить бин-коллекцию и внедрять её в другие бины:
+@Service
+@Getter
+public class ActionHeroesService {
+ @Autowired
+ List<Hero> actionHeroes;
+}
+@Configuration
+public class HeroesConfig {
+ @Bean
+ public List<Hero> action() {
+ List<Hero> result = new ArrayList<>();
+ result.add(new Terminator());
+ result.add(new Rambo());
+ return result;
+ }
+}

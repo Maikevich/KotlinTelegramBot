@@ -1,0 +1,8 @@
+Сначала вызываются все статические блоки в очередности от первого статического блока 
+корневого предка и выше по цепочке иерархии до статических блоков самого класса.
+Затем вызываются нестатические блоки инициализации корневого предка, конструктор 
+корневого предка и так далее вплоть до нестатических блоков и конструктора самого класса.
+Parent static block(s) → Child static block(s) → Grandchild static block(s)
+→ Parent non-static block(s) → Parent constructor →
+→ Child non-static block(s) → Child constructor →
+→ Grandchild non-static block(s) → Grandchild constructor

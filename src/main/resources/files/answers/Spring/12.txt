@@ -1,0 +1,16 @@
+Spring не позволяет внедрять бины напрямую в статические поля, например:
+@Component
+public class TestDataInit {
+ @Autowired
+ private static OrderItemService orderItemService;
+}
+Если вы распечатаете TestDataInit.orderItemService, там будет null.
+Чтобы исправить это, создайте нестатический сеттер-метод:
+@Component
+public class TestDataInit {
+ private static OrderItemService orderItemService;
+ @Autowired
+ public void setOrderItemService(OrderItemService orderItemService) {
+ TestDataInit.orderItemService = orderItemService;
+ }
+}

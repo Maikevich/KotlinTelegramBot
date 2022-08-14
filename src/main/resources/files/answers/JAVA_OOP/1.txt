@@ -1,0 +1,11 @@
+Top level class (Обычный класс):
+ - Abstract class (Абстрактный класс);
+ -Final class (Финализированный класс).
+Interfaces (Интерфейс).
+Enum (Перечисление).
+Nested class (Вложенный класс):
+ -Static nested class (Статический вложенный класс);
+ -Member inner class (Простой внутренний класс);
+ -Local inner class (Локальный класс);
+ -Anonymous inner class (Анонимный вложенный класс).
+К классам верхнего уровня модификатор static неприменим.

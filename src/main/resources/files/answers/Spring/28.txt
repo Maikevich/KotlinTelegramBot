@@ -1,0 +1,41 @@
+@Controller
+@Controller помечает класс как контроллер HTTP-запросов. @Controller обычно 
+используется в сочетании с аннотацией @RequestMapping, используемой в методах обработки 
+запросов. Это просто дочерняя аннотация аннотации @Component и позволяет автоматически 
+определять классы при сканировании пакетов.
+@RestController
+Аннотация @RestController была введена в Spring 4.0 для упрощения создания RESTful 
+веб-сервисов. Это удобная аннотация, которая объединяет @Controller и @ResponseBody, что 
+устраняет необходимость аннотировать каждый метод обработки запросов аннотацией 
+@ResponseBody.
+@ResponseBody сообщает контроллеру, что возвращаемый объект автоматически 
+сериализуется в json или xml и передается обратно в объект HttpResponse. Контроллер 
+использует Jackson message converter для конвертации входящих/исходящих данных. Как 
+правило целевые данные представлены в json или xml.
+ResponseEntity
+Данный класс используется для формирования ответа HTTP с пользовательскими 
+параметрами (заголовки, код статуса и тело ответа). ResponseEntity необходим, только если мы 
+хотим кастомизировать ответ. Во всех остальных случаях достаточно использовать 
+@ResponseBody.
+Если мы хотим использовать ResponseEntity, то просто должны вернуть его из метода, 
+Spring позаботится обо всем остальном.
+@GetMapping("/customHeader")
+ResponseEntity<String> customHeader() {
+ HttpHeaders headers = new HttpHeaders();
+ headers.add("Custom-Header", "foo");
+ 
+ return new ResponseEntity<>(
+ "Custom header set", headers, HttpStatus.OK);
+}
+Если клиент ждет от нас JSON/XML, мы можем параметризовать ResponseEntity 
+конкретным классом и добавить к ответу заголовки и Http статус:
+@RequestMapping(value = "/employees/{id}")
+public ResponseEntity<EmployeeVO> getEmployeeById (@PathVariable("id") int id){
+ if (id <= 3) {
+ EmployeeVO employee =
+ new EmployeeVO(1,"Lokesh","Gupta","howtodoinjava@gmail.com");
+ return new ResponseEntity<EmployeeVO>(employee, HttpStatus.OK);
+ }
+ return new ResponseEntity(HttpStatus.NOT_FOUND);
+ }
+}

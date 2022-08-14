@@ -1,0 +1,100 @@
+@Value
+Внедрить в поле примитив можно с помощью аннотации @Value на уровне параметров 
+поля или конструктора/метода.
+Нам понадобится файл свойств (*.properties), чтобы определить значения, которые мы 
+хотим внедрить аннотацией @Value. Сначала в нашем классе конфигурации нам нужно указать 
+аннотацию @PropertySource с именем файла свойств.
+@Component
+@PropertySource("classpath:values.properties")
+public class CollectionProvider {
+ ...
+}
+Содержимое файла values.properties:
+value.from.file=Value got from the file
+priority=high
+listOfValues=A,B,C
+Внедряем значение value.from.file, равное “Value got from the file”:
+@Value("${value.from.file}")
+private String valueFromFile;
+Если из файла не подтянутся значения по тем или иным причинам, то можно указать 
+значения, которые будут внедрены по умолчанию. В данном примере, если не будет доступен 
+value.from.file, то внедрится значение “some default”:
+@Value("${value.from.file:some default}")
+private String someDefault;
+Если нужно внедрить несколько значений, то можно их определить в файле *.properties 
+через запятую и Spring внедрит их как массив:
+@Value("${listOfValues}")
+private String[] valuesArray;
+@Value with SpEL
+Кроме того, для внедрения значений мы можем использовать язык SpEL (Spring 
+Expression Language):
+@Value("#{systemProperties['priority']}")
+private String spelValue;
+или со значениями по умолчанию:
+@Value("#{systemProperties['unknown'] ?: 'some default'}")
+private String spelSomeDefault;
+Мы можем использовать значение поля из другого бина. Предположим, у нас есть бин с 
+именем someBean с полем someValue, равным 10. Тогда в этом примере в поле будет записано 
+число 10:
+@Value("#{someBean.someValue}")
+private Integer someBeanValue;
+Мы можем манипулировать свойствами, чтобы получить список значений. В следующем 
+примере мы получаем список строковых значений A, B и C:
+@Value("#{'${listOfValues}'.split(',')}")
+private List<String> valuesList;
+@Value with Map
+Мы также можем использовать аннотацию @Value для добавления свойств в Map. Для 
+начала нам нужно определить свойство в формате {key: ‘value '} в нашем файле свойств:
+valuesMap={key1: '1', key2: '2', key3: '3'}
+Теперь мы можем вставить это значение из файла свойств в виде карты:
+@Value("#{${valuesMap}}")
+private Map<String, Integer> valuesMap;
+Можем просто внедрить значение по ключу:
+@Value("#{${valuesMap}.key1}")
+private Integer valuesMapKey1;
+Если мы не уверены, содержит ли Map определенный ключ, мы должны выбрать более 
+безопасное выражение, которое не будет генерировать исключение, а установит значение в 
+null, если ключ не найден:
+@Value("#{${valuesMap}['unknownKey']}")
+private Integer unknownMapKey;
+Мы также можем установить значения по умолчанию для свойств или ключей, которые 
+могут не существовать:
+@Value("#{${unknownMap : {key1: '1', key2: '2'}}}")
+private Map<String, Integer> unknownMap;
+@Value("#{${valuesMap}['unknownKey'] ?: 5}")
+private Integer unknownMapKeyWithDefaultValue;
+Записи карты также могут быть отфильтрованы перед внедрением. Предположим, нам 
+нужно получить только те записи, значения которых больше единицы:
+@Value("#{${valuesMap}.?[value>'1']}")
+private Map<String, Integer> valuesMapFiltered;
+Мы также можем использовать аннотацию @Value для добавления всех текущих 
+системных свойств:
+@Value("#{systemProperties}")
+private Map<String, String> systemPropertiesMap;
+@Value with Constructor
+Мы можем внедрять значения в конструкторе, если оно не найдено, то будет внедрено 
+значение по умолчанию:
+@Component
+@PropertySource("classpath:values.properties")
+public class PriorityProvider {
+ private String priority;
+ @Autowired
+ public PriorityProvider(@Value("${priority:normal}") String priority) {
+ this.priority = priority;
+ }
+ // standard getter
+}
+@Value with Setter
+В приведенном коде мы используем выражение SpEL для добавления списка значений 
+в метод setValues:
+@Component
+@PropertySource("classpath:values.properties")
+public class CollectionProvider {
+ private List<String> values = new ArrayList<>();
+ @Autowired
+ public void setValues(
+ @Value("#{'${listOfValues}'.split(',')}") List<String> values) {
+ this.values.addAll(values);
+ }
+ // standard getter
+}

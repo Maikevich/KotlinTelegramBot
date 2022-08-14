@@ -1,0 +1,30 @@
+вязывание - присоединение вызова метода к телу метода.
+Раннее (статическое) связывание - проводится компилятором (компоновщиком) перед 
+запуском программы. Например, перегрузка методов; приватные, статические и final методы.
+Позднее (динамическое) связывание - непосредственно во время выполнения программы
+(runtime), в зависимости от типа объекта. Например переопределение методов. Компилятор не 
+знает тип объекта, но механизм вызова методов определяет его и вызывает соответствующее тело 
+метода.
+Для всех методов Java используется механизм позднего (динамического) связывания, если 
+только метод не был объявлен как final (приватные методы являются final по умолчанию).
+public class Main {
+ public static void main(String[] args) {
+ Insurance current = new CarInsurance();
+ // Динамическое связывание на основе объекта потому что метод premium() нестатический
+ int premium = current.premium();
+ // Статическое связывание на основе класса, метод category() статический (принадлежит классу)
+ String category = current.category();
+ System.out.println("premium : " + premium);
+ System.out.println("category : " + category);
+ }
+}
+class Insurance{
+ public static final int LOW = 100;
+ public int premium(){return LOW;}
+ public static String category(){ return "Insurance";}
+}
+class CarInsurance extends Insurance{
+ public static final int HIGH = 200;
+ public int premium(){ return HIGH; }
+ public static String category(){return "Car Insurance";}
+}

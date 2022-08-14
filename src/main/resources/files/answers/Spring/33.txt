@@ -1,0 +1,10 @@
+ Используется JDK 8+ (Optional, CompletableFuture, Time API, java.util.function, default 
+methods)
+● Поддержка Java 9 (Automatic-Module-Name in 5.0, module-info in 6.0+, ASM 6)
+● Поддержка HTTP/2 (TLS, Push), NIO/NIO.2
+● Поддержка Kotlin
+● Реактивность (веб-инфраструктура с реактивным стеком, «Spring WebFlux»)
+● Null-safety аннотации(@Nullable), новая документация
+● Совместимость с Java EE 8 (Servlet 4.0, Bean Validation 2.0, JPA 2.2, JSON Binding API 1.0)
+● Поддержка JUnit 5 + Testing Improvements (conditional and concurrent)
+● Удалена поддержка: Portlet, Velocity, JasperReports, XMLBeans, JDO, Guava

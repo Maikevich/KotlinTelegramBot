@@ -1,0 +1,68 @@
+Это аннотация Spring Framework, ею помечают конструктор, поле, сеттер-метод или 
+метод конфигурации, сигнализируя, что им обязательно требуется внедрение зависимостей.
+Если в контейнере не будет обнаружен необходимый для вставки бин, то будет 
+выброшено исключение, либо можно указать @Autowired(required = false), означающее, что 
+внедрение зависимости в данном месте не обязательно.
+Аннотация @Autowired является альтернативой Java-аннотации @Inject, не имеющей 
+required = false (зависимость должна быть обязательно внедрена).
+Начиная со Spring Framework 4.3, аннотация @Autowired для конструктора больше не 
+требуется, если целевой компонент определяет только один конструктор. Однако, если 
+доступно несколько конструкторов и нет основного/стандартного конструктора, по крайней 
+мере один из конструкторов должен быть аннотирован @Autowired, чтобы указать контейнеру, 
+какой из них использовать.
+По умолчанию Spring распознает объекты для вставки по типу. Если в контейнере 
+доступно более одного бина одного и того же типа, будет исключение. Для избежания этого 
+можно указать аннотацию Spring Framework - @Qualifier("fooFormatter"), где fooFormatter — это
+имя (Id) одного из нескольких бинов одного типа, находящихся в контейнере и доступных для 
+внедрения:
+public class FooService {
+ @Autowired
+ @Qualifier("fooFormatter")
+ private Formatter formatter;
+}
+При выборе между несколькими бинами при автоматическом внедрении используется 
+имя поля. Это поведение по умолчанию, если нет других настроек. Давайте посмотрим код, 
+основанный на нашем первоначальном примере:
+@Component
+@Qualifier("fooFormatter")
+public class FooFormatter implements Formatter {
+ //...
+}
+@Component
+@Qualifier("barFormatter")
+public class BarFormatter implements Formatter {
+ //...
+}
+public class FooService {
+ @Autowired
+ private Formatter fooFormatter;
+}
+В этом случае Spring определит, что нужно внедрить бин с именем FooFormatter, 
+поскольку имя поля соответствует значению, которое мы использовали в аннотации 
+@Component для этого бина.
+Мы также можем указать Spring предоставить все бины определенного типа из 
+ApplicationContext, добавив аннотацию @Autowired в поле или метод с массивом или 
+коллекцией этого типа, как показано в следующем примере:
+@Autowired
+private MovieCatalog[] movieCatalogs;
+ или:
+@Autowired
+private Set<MovieCatalog> movieCatalogs;
+ или:
+@Autowired
+public void setMovieCatalogs(Set<MovieCatalog> movieCatalogs) {
+ this.movieCatalogs = movieCatalogs;
+}
+Даже коллекции типа Map могут быть подключены автоматически, если тип ключа -
+String. Ключами будут имена бинов, а значениями - сами бины, как показано в следующем 
+примере:
+public class MovieRecommender {
+ 
+ private Map<String, MovieCatalog> movieCatalogs;
+ 
+ @Autowired
+ public void setMovieCatalogs(Map<String, MovieCatalog> movieCatalogs){
+ this.movieCatalogs = movieCatalogs;
+ }
+ // ...
+}

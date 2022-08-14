@@ -1,0 +1,12 @@
+Да, можно принять все значения, используя массив в методе контроллера:
+http://localhost:8080/login?name=Ranga&name=Ravi&name=Sathish
+public String method(@RequestParam(value="name") String[] names){...}
+или
+http://localhost:8080/api/foos?id=1,2,3
+----
+IDs are [1,2,3]
+@GetMapping("/api/foos")
+@ResponseBody
+public String getFoos(@RequestParam List<String> id) {
+ return "IDs are " + id;
+}

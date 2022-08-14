@@ -1,0 +1,4 @@
+public boolean equals(Object obj) { return (this == obj);}
+public native int hashCode();
+native означает, что реализация данного метода выполнена на другом языке (здесь на C++) и 
+обычно возвращает адрес объекта в памяти.

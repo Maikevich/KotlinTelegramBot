@@ -1,0 +1,6 @@
+примитивные (boolean, char, byte, short, int, long, float, double) и
+ссылочные.
+Числа инициализируются 0 или 0.0;
+char — \u0000;
+boolean — false;
+Объекты (в том числе String) — null.

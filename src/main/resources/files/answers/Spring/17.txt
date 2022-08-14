@@ -1,0 +1,25 @@
+Аннотация @ComponentScan используется вместе с аннотацией @Configuration для 
+указания пакетов, которые мы хотим сканировать на наличие компонентов, из которых нужно 
+сделать бины.
+@ComponentScan без аргументов указывает Spring по умолчанию сканировать текущий 
+пакет и все его подпакеты. Текущий пакет - тот, в котором находится файл конфигурации с этой 
+самой аннотацией @ComponentScan. В данном случае в контейнер попадут:
+❖ бин конфигурационного класса;
+❖ бины, объявленные в конфигурационном классе с помощью @Bean;
+❖ все бины из пакета и его подпакетов.
+Аннотация @SpringBootApplication включает в себя аннотации @ComponentScan, 
+@SpringBootConfiguration и @EnableAutoConfiguration, но это не мешает разместить её ещё раз 
+отдельно для указания конкретного пакета.
+Если указать @ComponentScan с атрибутом basePackages, то это изменит пакет по 
+умолчанию на указанный:
+@ComponentScan(basePackages =
+ "com.baeldung.componentscan.springapp.animals")
+@Configuration
+public class SpringComponentScanApp {
+ // ...
+}
+Если указать @ComponentScan с атрибутом excludeFilters, то это позволит использовать 
+фильтр и исключить ненужные классы из процесса сканирования:
+@ComponentScan(excludeFilters =
+ @ComponentScan.Filter(type=FilterType.REGEX,
+ pattern="com\\.baeldung\\.componentscan\\.springapp\\.flowers\\..*"))

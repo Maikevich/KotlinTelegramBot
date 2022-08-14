@@ -1,0 +1,9 @@
+Метод intern() используется для сохранения строки в пуле строк или получения ссылки, если 
+такая строка уже находится в пуле.
+String q = "I'm";
+String w = "I'm";
+String r = new String("I'm");
+String t = r.intern();
+System.out.println("q==w: "+(q==w)); //true
+ System.out.println("q==r: "+(q==r)); //false
+ System.out.println("q==t: "+(q==t)); //true

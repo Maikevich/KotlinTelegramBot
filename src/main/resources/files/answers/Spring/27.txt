@@ -1,0 +1,34 @@
+Model
+Интерфейс, лежит в пакете spring-context. В методах контроллера мы можем 
+использовать объекты Model для того, чтобы складывать туда данные, предназначенные для 
+формирования представлений. Кроме того, в Model мы можем передать даже Map с 
+атрибутами:
+@GetMapping("/showViewPage")
+public String passParametersWithModel(Model model) {
+ Map<String, String> map = new HashMap<>();
+ map.put("spring", "mvc");
+ model.addAttribute("message", "Baeldung");
+ model.mergeAttributes(map);
+ return "viewPage";
+}
+ModelMap
+Этот класс наследуется от LinkedHashMap<String, Object> и по сути служит общим 
+контейнером модели для Servlet MVC, но не привязан к нему, и лежит в пакете spring-context. 
+Имеет все преимущества LinkedHashMap плюс несколько удобных методов:
+@GetMapping("/printViewPage")
+public String passParametersWithModelMap(ModelMap map) {
+ map.addAttribute("welcomeMessage", "welcome");
+ map.addAttribute("message", "Baeldung");
+ return "viewPage";
+}
+ModelAndView
+Этот класс лежит в пакете spring-webmvc и может одновременно хранить модели и 
+представление, чтобы контроллер мог отдавать их в одном возвращаемом значении. Внутри 
+содержит поле private Object view, куда записывает нужное представление, а также поле private 
+ModelMap model, куда и складывает все атрибуты модели:
+@GetMapping("/goToViewPage")
+public ModelAndView passParametersWithModelAndView() {
+ ModelAndView modelAndView = new ModelAndView("viewPage");
+ modelAndView.addObject("message", "Baeldung");
+ return modelAndView;
+}

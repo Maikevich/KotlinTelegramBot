@@ -1,0 +1,75 @@
+Spring Framework поддерживает шесть scopes:
+1. singleton
+2. prototype
+3. request
+4. session
+5. application
+6. websocket
+7. не активированный по умолчанию Custom thread scope.
+С 3 по 6 доступны только в веб-приложениях. Мы также можем создать свой 
+собственный scope.
+Singleton 
+Является дефолтным scope. В контейнере будет создан только один бин, и все запросы 
+на него будут возвращать один и тот же бин. Этот бин хранится в контейнере, и все запросы и 
+ссылки на этот бин возвращают закэшированный экземпляр.
+Prototype 
+Scope “prototype” приводит к созданию нового бина каждый раз, когда он 
+запрашивается.
+Для бинов со scope “prototype” Spring не вызывает метод destroy(). Spring не берет на 
+себя контроль полного жизненного цикла бина со scope @prototype”. Spring не хранит такие 
+бины в своём контексте ( контейнере), а отдаёт их клиенту и больше о них не заботится (в 
+отличие от синглтон-бинов).
+Request
+Контейнер создает новый экземпляр для каждого HTTP-запроса. Таким образом, если 
+сервер в настоящее время обрабатывает 50 запросов, тогда контейнер может иметь не более 
+50 бинов, по одному для каждого HTTP-запроса. Любое изменение состояния одного 
+экземпляра не будет видимо другим экземплярам. Эти экземпляры уничтожаются, как только 
+HTTP-запрос завершен.
+@Component
+@Scope("request")
+public class BeanClass {
+}
+//or
+@Component
+@RequestScope
+public class BeanClass {
+}
+Session
+Бин создается в одном экземпляре для одной HTTP-сессии. Таким образом, если сервер 
+имеет 20 активных сессий, тогда контейнер может иметь не более 20 бинов, по одному для 
+каждой сессии. Все HTTP-запросы в пределах времени жизни одной сессии будут иметь доступ 
+к одному и тому же бину.
+@Component
+@Scope("session")
+public class BeanClass {
+}
+//or
+@Component
+@SessionScope
+public class BeanClass {
+}
+Application
+Бин со scope “application” создается в одном экземпляре для жизненного цикла
+ServletContext. Виден как атрибут ServletContext. Синглтон - в одном экземпляре для
+ApplicationContext.
+@Component
+@Scope("application")
+public class BeanClass {
+}
+//or
+@Component
+@ApplicationScope
+public class BeanClass {
+}
+Websocket
+Бин со scope “websocket” создается в одном экземпляре для определенного сеанса 
+WebSocket. Один и тот же бин возвращается всякий раз, когда к нему обращаются в течение 
+всего сеанса WebSocket.
+@Component
+@Scope("websocket")
+public class BeanClass {
+}
+Custom thread scope
+Spring по умолчанию не предоставляет thread scope, но его можно активировать. 
+Каждый запрос на бин в рамках одного потока будет возвращать один и тот же бин.
+В пятой версии Spring Framework не стало Global session scope.

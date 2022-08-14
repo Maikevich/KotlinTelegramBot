@@ -1,0 +1,4 @@
+Для создания собственного протокола сериализации достаточно реализовать интерфейс 
+Externalizable, который содержит два метода:
+public void writeExternal(ObjectOutput out) throws IOException;
+public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException
