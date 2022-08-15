@@ -6,10 +6,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 @Service
 class InlineKeyboardMarkupCreator {
 
-    fun getInlineKeyboardMarkup(list: List<InlineKeyboardButton>): List<List<InlineKeyboardButton>>? {
-        val rowList: MutableList<List<InlineKeyboardButton>> = ArrayList()
-        rowList.add(list)
-        return rowList
-    }
+    fun getInlineKeyboardMarkup(list: List<InlineKeyboardButton>): List<List<InlineKeyboardButton>>? = listOf(list)
 
 }

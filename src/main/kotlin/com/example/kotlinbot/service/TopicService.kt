@@ -1,6 +1,7 @@
 package com.example.kotlinbot.service
 
 import com.example.kotlinbot.service.files.FileReader
+import com.example.kotlinbot.util.logger
 import org.springframework.stereotype.Service
 
 @Service
@@ -11,13 +12,14 @@ class TopicService(
 
     fun getCurrentTopicAnswer(messageText: String): String {
         mainTopic.setAnswerFile(messageText)
-        var result: String? = ""
+        var result: String = "Введите номер вопроса из списка"
         try {
-            result = fileReader.readFile(mainTopic.getAnswersList())
+            var answer :String?  = fileReader.readFile(mainTopic.getAnswerFile())
+            return answer!!
         } catch (nfe: NumberFormatException) {
-            println(nfe.message)
+           LOG.error("Не найден файл ответа")
         }
-        return result!!
+        return result
     }
 
     fun getCurrentTopicQuestionsList(): String? = fileReader.readFile(mainTopic.getQuestionsFile())
@@ -31,4 +33,8 @@ class TopicService(
     }
 
     fun getCurrentTopic() = mainTopic.getTopic()
+
+    companion object{
+        val LOG by logger()
+    }
 }

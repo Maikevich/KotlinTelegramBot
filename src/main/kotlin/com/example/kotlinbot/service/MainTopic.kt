@@ -24,5 +24,5 @@ class MainTopic() {
         answerFile ="files/answers/$topic/$messageText.txt"
     }
 
-    fun getAnswersList() = answerFile
+    fun getAnswerFile() = answerFile
 }
