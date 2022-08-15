@@ -11,7 +11,7 @@ import kotlin.jvm.Throws
 @Service
 class FileReader {
 
-
+    @Throws(NullPointerException::class)
     fun readFile(path: String): String? = this::class.java.classLoader.getResource(path).readText()
 
 }

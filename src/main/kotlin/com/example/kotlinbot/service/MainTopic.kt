@@ -3,7 +3,7 @@ package com.example.kotlinbot.service
 import org.springframework.stereotype.Component
 
 @Component
-class MainTopic() {
+  class MainTopic() {
     private var topic: String = "null"
     private lateinit var answerFile: String
     private lateinit var questionsFile: String

@@ -1,5 +1,6 @@
 package com.example.kotlinbot.service
 
+import com.example.kotlinbot.entity.User
 import com.example.kotlinbot.enums.Commands
 import com.example.kotlinbot.enums.TopicNames
 import org.springframework.stereotype.Service
@@ -15,12 +16,12 @@ class UpdateReader(
     private var builder = SendMessage.builder()
 
 
-    fun readUpdate(update: Update): SendMessageBuilder? {
-        if (update.hasMessage() && topicService.getCurrentTopic() == "null") {
+    fun readUpdate(update: Update,user: User?): SendMessageBuilder? {
+        if (update.hasMessage() && user?.getMainTopic()?.getTopic() == "null") {
             builder.chatId(update.message.chatId.toString())
             builder.replyMarkup(keyboardService.getTopicsInlineKeyboard(true))
         }
-        if (update.hasMessage() && topicService.getCurrentTopic() != "null") {
+        if (update.hasMessage() && user?.getMainTopic()?.getTopic() != "null") {
             builder.chatId(update.message.chatId.toString())
         }
         if (update.hasCallbackQuery() && update.callbackQuery.data == TopicNames.CORE_ONE.name) {
@@ -30,7 +31,9 @@ class UpdateReader(
         }
         if (update.hasCallbackQuery() && update.callbackQuery.data == Commands.RESTART.name) {
             builder.chatId(update.callbackQuery.message.chatId.toString())
-            topicService.initializeTopic("null")
+            if (user != null) {
+                topicService.initializeTopic("null",user)
+            }
             builder.replyMarkup(keyboardService.getTopicsInlineKeyboard(true))
             return builder
         }

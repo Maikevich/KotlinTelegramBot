@@ -12,13 +12,15 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 class Bot(
     private val botConfig: BotConfig,
     private val messageConstructor: MessageConstructor,
-    private val updateRecognizer: UpdateReader
+    private val updateRecognizer: UpdateReader,
+    private val userService: UserService
 ) : TelegramLongPollingBot() {
 
 
     override fun onUpdateReceived(update: Update) {
         update.updateId
-        sendMessage(messageConstructor.constructMessage(update), updateRecognizer.readUpdate(update)!!)
+        var user = userService.getUserByChatId(update)
+        sendMessage(messageConstructor.constructMessage(update,user), updateRecognizer.readUpdate(update,user)!!)
     }
 
     private fun sendMessage(str: String, builder: SendMessageBuilder) {
@@ -33,8 +35,8 @@ class Bot(
     override fun getBotToken(): String = botConfig.getBotToken()
     override fun getBotUsername(): String = botConfig.getBotUserName()
 
-    companion object{
-       val LOG by logger()
+    companion object {
+        val LOG by logger()
     }
 
 }
